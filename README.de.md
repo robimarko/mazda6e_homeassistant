@@ -76,6 +76,16 @@ das Abfrageintervall (Standard: 5 Minuten) einstellen.
 > (auch die offizielle App zeigt keinen Standort an), daher gibt es keine
 > Standort-Entität.
 
+## ABRP-Livedaten
+
+Die Integration kann nach jeder erfolgreichen Mazda-Cloud-Abfrage Fahrzeugdaten an [A Better Routeplanner](https://abetterrouteplanner.com/resources/api) senden. Das ist optional und nutzt die Verbindung **Generic Live Data** für jedes Fahrzeug.
+
+1. In ABRP unter **Manage your telemetry API keys** einen kostenlosen Telemetrie-API-Schlüssel erstellen.
+2. Für jedes Fahrzeug in ABRP unter **Live Data Setup → Generic** den Fahrzeug-Token kopieren.
+3. In Home Assistant **Mazda 6e → Konfigurieren** öffnen. Den API-Schlüssel und unter **ABRP-Fahrzeug-Tokens** pro Auto eine Zeile `VIN=Token` eintragen. Die vollständige VIN der Mazda-Integration verwenden.
+
+Eine Zeile entfernen, um das Hochladen für dieses Auto zu beenden. Fehler beim ABRP-Upload beeinflussen die Mazda-Entitäten nicht. Die Cloud liefert keine GPS-Koordinaten oder Batterieleistung; neue Werte kommen nur im eingestellten Abfrageintervall (standardmäßig fünf Minuten). ABRP erhält Akkustand, geschätzte Reichweite, Ladestatus, Geschwindigkeit und Kilometerstand, soweit Mazda diese Werte meldet. Routenposition und Verbrauchskalibrierung bleiben gegenüber einer OBD-Verbindung eingeschränkt. API-Schlüssel und Tokens werden in den Integrationsoptionen von Home Assistant gespeichert.
+
 Hinweis zur Verriegelung: Die Entität hat die Geräteklasse *Schloss*, d. h. **„Ein“ =
 entriegelt**, „Aus“ = verriegelt.
 

@@ -10,9 +10,11 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import Mazda6eClient, MazdaApiError, MazdaAuthError, MazdaError
+from .abrp import AbrpUploader
 from .const import DOMAIN
 from .models import Vehicle, VehicleStatus
 
@@ -57,6 +59,7 @@ class Mazda6eCoordinator(DataUpdateCoordinator[dict[str, VehicleData]]):
             update_interval=interval,
         )
         self.client = client
+        self.abrp = AbrpUploader(async_get_clientsession(hass))
         self._vehicles: list[Vehicle] | None = None
         self._functions: dict[str, set[str]] = {}
         # vehicle_id -> Preconditioner, filled in async_setup_entry
@@ -89,6 +92,8 @@ class Mazda6eCoordinator(DataUpdateCoordinator[dict[str, VehicleData]]):
                     except MazdaApiError as err:
                         _LOGGER.debug("No battery preheat plan for %s: %s", vid, err)
                 result[vid] = data
+            for data in result.values():
+                await self.abrp.send(data.vehicle.vin, data.status)
             return result
         except MazdaAuthError as err:
             raise ConfigEntryAuthFailed(str(err)) from err

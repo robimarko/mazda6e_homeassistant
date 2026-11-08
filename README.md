@@ -74,6 +74,16 @@ you can set the polling interval (default: 5 minutes).
 > (the official app doesn't show a location either), so there is no `device_tracker`
 > entity.
 
+## ABRP live data
+
+The integration can send each successful Mazda cloud poll to [A Better Routeplanner](https://abetterrouteplanner.com/resources/api). This is optional and uses the Generic Live Data connection for each car.
+
+1. Create a free telemetry API key in ABRP under **Manage your telemetry API keys**.
+2. In ABRP, select each car, open **Live Data Setup**, choose **Generic**, and copy its vehicle token.
+3. In Home Assistant, open **Mazda 6e → Configure**. Enter the API key and add one `VIN=token` line per car under **ABRP vehicle tokens**. Use the car's full VIN as shown by the Mazda integration.
+
+Remove a car's line to stop its uploads. A failed ABRP upload does not affect Mazda entities. The cloud does not provide GPS coordinates or battery power, and updates arrive only at the configured polling interval (five minutes by default). ABRP can follow state of charge, estimated range, charging state, speed, and odometer when Mazda reports them, but route position and consumption calibration remain limited compared with an OBD connection. The API key and vehicle tokens are stored in Home Assistant's integration options.
+
 Note on the lock: the entity uses the *lock* device class, so **"on" (unlocked) /
 "off" (locked)** — the inverse of what you might expect from the name.
 

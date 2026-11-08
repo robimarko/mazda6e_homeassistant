@@ -11,6 +11,8 @@ CONF_REFRESH_TOKEN = "refresh_token"
 CONF_CONTROL_PRIVATE_KEY = "control_private_key"
 CONF_CONTROL_PIN = "control_pin"
 CONF_STORE_PIN = "store_pin"
+CONF_ABRP_API_KEY = "abrp_api_key"
+CONF_ABRP_TOKENS = "abrp_tokens"
 
 REGION_EUROPE = "europe"
 REGION_ASIA = "asia"

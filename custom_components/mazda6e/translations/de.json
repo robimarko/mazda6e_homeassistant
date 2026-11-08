@@ -36,18 +36,25 @@
         "data": {
           "scan_interval": "Abfrageintervall (Minuten)",
           "store_pin": "Steuer-PIN speichern",
-          "control_pin": "Steuer-PIN (6 Ziffern)"
+          "control_pin": "Steuer-PIN (6 Ziffern)",
+          "abrp_api_key": "ABRP-Telemetrie-API-Schlüssel",
+          "abrp_tokens": "ABRP-Fahrzeug-Tokens"
         },
         "data_description": {
           "scan_interval": "Kurze Intervalle können das Auto häufiger wecken und die 12-V-Batterie belasten.",
           "store_pin": "Wenn aus, fragt Home Assistant bei jedem Ver- und Entriegeln nach der PIN.",
-          "control_pin": "Die PIN für die Fernsteuerung aus der Mazda-App. Leer lassen, um die gespeicherte PIN zu behalten."
+          "control_pin": "Die PIN für die Fernsteuerung aus der Mazda-App. Leer lassen, um die gespeicherte PIN zu behalten.",
+          "abrp_api_key": "Kostenlosen Telemetrie-Schlüssel in ABRP erstellen. Leer lassen, um den gespeicherten Schlüssel zu behalten.",
+          "abrp_tokens": "Eine VIN=Generic-Live-Data-Token-Zuordnung pro Zeile. Zeile entfernen, um das Hochladen für das Fahrzeug zu beenden."
         },
         "description": "Die PIN wird beim Speichern bei Mazda geprüft. Zu viele Fehlversuche sperren die Fernsteuerung in der App."
       }
     },
     "error": {
       "pin_required": "Bitte PIN eingeben, um sie zu speichern.",
+      "invalid_abrp_tokens": "Eine VIN=Token-Zuordnung pro Zeile ohne doppelte VIN eingeben.",
+      "unknown_abrp_vin": "Eine VIN passt zu keinem Fahrzeug in diesem Mazda-Konto.",
+      "abrp_api_key_required": "Zum Hochladen einen ABRP-Telemetrie-API-Schlüssel eingeben.",
       "invalid_pin_format": "Die PIN muss aus genau 6 Ziffern bestehen.",
       "invalid_pin": "Mazda hat die PIN abgelehnt.",
       "invalid_pin_attempts": "Mazda hat die PIN abgelehnt. Verbleibende Versuche: {attempts}.",

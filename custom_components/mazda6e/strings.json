@@ -36,18 +36,25 @@
         "data": {
           "scan_interval": "Update interval (minutes)",
           "store_pin": "Store control PIN",
-          "control_pin": "Control PIN (6 digits)"
+          "control_pin": "Control PIN (6 digits)",
+          "abrp_api_key": "ABRP telemetry API key",
+          "abrp_tokens": "ABRP vehicle tokens"
         },
         "data_description": {
           "scan_interval": "Short intervals may wake the car more often and drain the 12 V battery.",
           "store_pin": "If off, Home Assistant asks for the PIN each time you lock or unlock.",
-          "control_pin": "The remote-control PIN from the Mazda app. Leave empty to keep the stored PIN."
+          "control_pin": "The remote-control PIN from the Mazda app. Leave empty to keep the stored PIN.",
+          "abrp_api_key": "Create a free telemetry key in ABRP. Leave empty to keep the stored key.",
+          "abrp_tokens": "One VIN=Generic Live Data token per line. Remove a line to stop uploading that car."
         },
         "description": "The PIN is checked with Mazda when you save. Too many wrong attempts lock remote control in the app."
       }
     },
     "error": {
       "pin_required": "Enter the PIN to store it.",
+      "invalid_abrp_tokens": "Enter one VIN=token pair per line, without duplicate VINs.",
+      "unknown_abrp_vin": "A VIN does not match a car on this Mazda account.",
+      "abrp_api_key_required": "Enter an ABRP telemetry API key to enable upload.",
       "invalid_pin_format": "The PIN has to be exactly 6 digits.",
       "invalid_pin": "Mazda rejected the PIN.",
       "invalid_pin_attempts": "Mazda rejected the PIN. Attempts left: {attempts}.",

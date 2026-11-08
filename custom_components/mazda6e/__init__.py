@@ -16,6 +16,8 @@ from homeassistant.helpers.typing import ConfigType
 
 from .api import Mazda6eClient
 from .const import (
+    CONF_ABRP_API_KEY,
+    CONF_ABRP_TOKENS,
     CONF_CONTROL_PIN,
     CONF_CONTROL_PRIVATE_KEY,
     CONF_DEVICE_ID,
@@ -73,6 +75,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: Mazda6eConfigEntry) -> b
     )
     minutes = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     coordinator = Mazda6eCoordinator(hass, entry, client, timedelta(minutes=minutes))
+    coordinator.abrp.configure(
+        entry.options.get(CONF_ABRP_API_KEY, ""), entry.options.get(CONF_ABRP_TOKENS, {})
+    )
     await coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = coordinator
@@ -144,6 +149,9 @@ async def _async_entry_updated(hass: HomeAssistant, entry: Mazda6eConfigEntry) -
         preconditioner.async_plans_changed()
     minutes = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     coordinator.update_interval = timedelta(minutes=minutes)
+    coordinator.abrp.configure(
+        entry.options.get(CONF_ABRP_API_KEY, ""), entry.options.get(CONF_ABRP_TOKENS, {})
+    )
     pin = entry.options.get(CONF_CONTROL_PIN)
     if coordinator.client.control_pin != pin:
         coordinator.client.control_pin = pin

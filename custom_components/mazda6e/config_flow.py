@@ -46,6 +46,8 @@ from .api import (
     MazdaPinError,
 )
 from .const import (
+    CONF_ABRP_API_KEY,
+    CONF_ABRP_TOKENS,
     CONF_CONTROL_PIN,
     CONF_CONTROL_PRIVATE_KEY,
     CONF_DEVICE_ID,
@@ -334,10 +336,28 @@ class Mazda6eOptionsFlow(OptionsFlow):
 
         if user_input is not None:
             new_options = {CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL])}
+            api_key = (user_input.get(CONF_ABRP_API_KEY) or "").strip() or options.get(
+                CONF_ABRP_API_KEY, ""
+            )
+            tokens = dict(options.get(CONF_ABRP_TOKENS, {}))
+            if CONF_ABRP_TOKENS in user_input:
+                try:
+                    tokens = _parse_abrp_tokens(user_input[CONF_ABRP_TOKENS])
+                except ValueError:
+                    errors[CONF_ABRP_TOKENS] = "invalid_abrp_tokens"
+            if tokens and not api_key:
+                errors[CONF_ABRP_API_KEY] = "abrp_api_key_required"
+            coordinator = getattr(self.config_entry, "runtime_data", None)
+            if coordinator is not None and tokens:
+                known_vins = {data.vehicle.vin for data in coordinator.data.values()}
+                if any(vin not in known_vins for vin in tokens):
+                    errors[CONF_ABRP_TOKENS] = "unknown_abrp_vin"
+            new_options[CONF_ABRP_API_KEY] = api_key
+            new_options[CONF_ABRP_TOKENS] = tokens
             pin = (user_input.get(CONF_CONTROL_PIN) or "").strip()
             if user_input.get(CONF_STORE_PIN):
                 if pin:
-                    errors = await self._async_check_pin(pin, placeholders)
+                    errors.update(await self._async_check_pin(pin, placeholders))
                     new_options[CONF_CONTROL_PIN] = pin
                 elif options.get(CONF_CONTROL_PIN):
                     new_options[CONF_CONTROL_PIN] = options[CONF_CONTROL_PIN]
@@ -370,6 +390,18 @@ class Mazda6eOptionsFlow(OptionsFlow):
                     vol.Optional(CONF_CONTROL_PIN): TextSelector(
                         TextSelectorConfig(type=TextSelectorType.PASSWORD)
                     ),
+                    vol.Optional(CONF_ABRP_API_KEY): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.PASSWORD)
+                    ),
+                    vol.Optional(
+                        CONF_ABRP_TOKENS,
+                        default="\n".join(
+                            f"{vin}={token}"
+                            for vin, token in options.get(CONF_ABRP_TOKENS, {}).items()
+                        ),
+                    ): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.TEXT, multiline=True)
+                    ),
                 }
             ),
         )
@@ -394,3 +426,16 @@ class Mazda6eOptionsFlow(OptionsFlow):
             _LOGGER.exception("Could not verify the control PIN")
             return {"base": "unknown"}
         return {}
+
+
+def _parse_abrp_tokens(value: str) -> dict[str, str]:
+    tokens: dict[str, str] = {}
+    for line in value.splitlines():
+        if not line.strip():
+            continue
+        vin, sep, token = line.partition("=")
+        vin, token = vin.strip(), token.strip()
+        if not sep or not vin or not token or vin in tokens:
+            raise ValueError("Expected one VIN=token mapping per line")
+        tokens[vin] = token
+    return tokens
